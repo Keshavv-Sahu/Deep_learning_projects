@@ -28,11 +28,21 @@ def embedding_sequence(input, input_dimension:int, output_dimension:int, max_len
 
 embed = embedding_sequence(res[0], 4,3,3)
 
+
 X = torch.tensor(embed[0])
-print(X)
+print(X, "Input word")
 
 w_q = nn.Linear(3,3, bias=False)
 w_k = nn.Linear(3,3, bias=False)
 w_v = nn.Linear(3,3, bias=False)
 
+query_vector = w_q(X)
+key_vector = w_k(X)
+value_vector = w_v(X)
 
+print(query_vector, "Query Vector")
+print(key_vector, "key Vector")
+print(value_vector, "value Vector")
+
+score = torch.matmul(query_vector, key_vector.T)
+print(score)
