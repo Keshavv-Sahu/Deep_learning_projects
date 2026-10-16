@@ -6,7 +6,7 @@ import torch.nn as nn
 from tensorflow.keras.layers import Softmax, Embedding, Dense
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.models import Sequential
-input = np.array(["watch your back"])
+input = np.array(["aloo kkha loo"])
 
 
 def tokenize_input(input):
@@ -29,20 +29,23 @@ def embedding_sequence(input, input_dimension:int, output_dimension:int, max_len
 embed = embedding_sequence(res[0], 4,3,3)
 
 
-X = torch.tensor(embed[0])
-print(X, "Input word")
+def attention_score_and_scaling(input_embed, dim_k:int):
+    X = torch.tensor(input_embed)
+    w_q = nn.Linear(3,3, bias=False)
+    w_k = nn.Linear(3,3, bias=False)
+    w_v = nn.Linear(3,3, bias=False)
 
-w_q = nn.Linear(3,3, bias=False)
-w_k = nn.Linear(3,3, bias=False)
-w_v = nn.Linear(3,3, bias=False)
+    WQ_tensor = w_q.weight.data
+    WK_tensor = w_k.weight.data
+    WV_tensor = w_v.weight.data
 
-query_vector = w_q(X)
-key_vector = w_k(X)
-value_vector = w_v(X)
+    query_vector = torch.matmul(X, WQ_tensor)
+    key_vector = torch.matmul(X, WK_tensor)
+    value_vector = torch.matmul(X, WV_tensor)
 
-print(query_vector, "Query Vector")
-print(key_vector, "key Vector")
-print(value_vector, "value Vector")
+    attention_score = torch.matmul(query_vector, key_vector)/dim_k
 
-score = torch.matmul(query_vector, key_vector.T)
-print(score)
+    contextual_attention_embeddings = torch.softmax(attention_score, dim=-1)
+    print(contextual_attention_embeddings)
+
+attention_score_and_scaling(embed[0], 3)
